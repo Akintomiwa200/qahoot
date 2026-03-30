@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap, Users } from 'lucide-react';
+import { Zap, Users, BookOpen, Settings } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -53,6 +53,40 @@ const HomePage: React.FC = () => {
             <CardContent>
               <Button className="w-full" size="lg" variant="secondary" onClick={() => navigate('/join')}>
                 Join Quiz
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-info/10 flex items-center justify-center mb-4 group-hover:bg-info/20 transition-colors">
+                <BookOpen className="w-6 h-6 text-info" />
+              </div>
+              <CardTitle className="text-2xl">Quiz Library</CardTitle>
+              <CardDescription className="text-base">
+                Browse and manage your saved quizzes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" size="lg" variant="outline" onClick={() => navigate('/quiz-library')}>
+                View Library
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mb-4 group-hover:bg-success/20 transition-colors">
+                <Settings className="w-6 h-6 text-success" />
+              </div>
+              <CardTitle className="text-2xl">Customize</CardTitle>
+              <CardDescription className="text-base">
+                Personalize backgrounds, music, and branding
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" size="lg" variant="outline" onClick={() => navigate('/quiz-settings')}>
+                Settings
               </Button>
             </CardContent>
           </Card>

@@ -6,17 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus, ArrowLeft, GripVertical } from 'lucide-react';
+import { Trash2, Plus, ArrowLeft, GripVertical, Save, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Quiz, QuizQuestion } from '@/types/quiz';
 
 const CreateQuizPage: React.FC = () => {
   const navigate = useNavigate();
-  const { createSession } = useGame();
+  const { createSession, saveQuiz } = useGame();
   const [quizTitle, setQuizTitle] = useState('');
+  const [quizDescription, setQuizDescription] = useState('');
+  const [quizCategory, setQuizCategory] = useState('');
   const [questions, setQuestions] = useState<QuizQuestion[]>([
     {
       id: `q-${Date.now()}`,
+      type: 'multiple-choice',
       text: '',
       options: ['', ''],
       correctAnswer: 0,
@@ -29,6 +32,7 @@ const CreateQuizPage: React.FC = () => {
       ...questions,
       {
         id: `q-${Date.now()}`,
+        type: 'multiple-choice',
         text: '',
         options: ['', ''],
         correctAnswer: 0,
@@ -103,13 +107,59 @@ const CreateQuizPage: React.FC = () => {
     const quiz: Quiz = {
       id: `quiz-${Date.now()}`,
       title: quizTitle,
+      description: quizDescription,
+      category: quizCategory,
       questions,
+      settings: {
+        backgroundTheme: 'default',
+        musicEnabled: false,
+        soundEffectsEnabled: true,
+      },
       createdAt: new Date(),
     };
 
     const roomCode = createSession(quiz);
     toast.success(`Quiz created! Room code: ${roomCode}`);
     navigate('/lobby');
+  };
+
+  const handleSaveQuiz = () => {
+    if (!quizTitle.trim()) {
+      toast.error('Please enter a quiz title');
+      return;
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.text.trim()) {
+        toast.error(`Question ${i + 1} is empty`);
+        return;
+      }
+      for (let j = 0; j < q.options.length; j++) {
+        if (!q.options[j].trim()) {
+          toast.error(`Question ${i + 1}, Option ${j + 1} is empty`);
+          return;
+        }
+      }
+    }
+
+    const quiz: Quiz = {
+      id: `quiz-${Date.now()}`,
+      title: quizTitle,
+      description: quizDescription,
+      category: quizCategory,
+      questions,
+      settings: {
+        backgroundTheme: 'default',
+        musicEnabled: false,
+        soundEffectsEnabled: true,
+      },
+      createdAt: new Date(),
+    };
+
+    saveQuiz(quiz);
+    toast.success('Quiz saved to library!');
+    navigate('/quiz-library');
   };
 
   return (
@@ -119,17 +169,21 @@ const CreateQuizPage: React.FC = () => {
           <Button variant="outline" size="icon" onClick={() => navigate('/')}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold">Create Quiz</h1>
             <p className="text-muted-foreground">Design your quiz questions and answers</p>
           </div>
+          <Button variant="outline" onClick={() => navigate('/quiz-library')}>
+            <BookOpen className="w-4 h-4 mr-2" />
+            Library
+          </Button>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Quiz Details</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="quiz-title">Quiz Title</Label>
               <Input
@@ -137,6 +191,24 @@ const CreateQuizPage: React.FC = () => {
                 placeholder="Enter quiz title..."
                 value={quizTitle}
                 onChange={(e) => setQuizTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="quiz-description">Description (Optional)</Label>
+              <Input
+                id="quiz-description"
+                placeholder="Brief description of your quiz..."
+                value={quizDescription}
+                onChange={(e) => setQuizDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="quiz-category">Category (Optional)</Label>
+              <Input
+                id="quiz-category"
+                placeholder="e.g., Science, History, General Knowledge..."
+                value={quizCategory}
+                onChange={(e) => setQuizCategory(e.target.value)}
               />
             </div>
           </CardContent>
@@ -233,6 +305,10 @@ const CreateQuizPage: React.FC = () => {
           <Button variant="outline" onClick={addQuestion} className="flex-1">
             <Plus className="w-4 h-4 mr-2" />
             Add Question
+          </Button>
+          <Button onClick={handleSaveQuiz} variant="outline" className="flex-1">
+            <Save className="w-4 h-4 mr-2" />
+            Save to Library
           </Button>
           <Button onClick={validateAndStart} className="flex-1" size="lg">
             Start Quiz

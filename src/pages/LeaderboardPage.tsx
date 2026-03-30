@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Medal, Award, Home } from 'lucide-react';
+import { Trophy, Medal, Award, Home, TrendingUp } from 'lucide-react';
 
 const LeaderboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +24,10 @@ const LeaderboardPage: React.FC = () => {
   const handleEndSession = () => {
     endSession();
     navigate('/');
+  };
+
+  const handleViewAnalytics = () => {
+    navigate('/analytics');
   };
 
   const getRankIcon = (rank: number) => {
@@ -81,11 +85,18 @@ const LeaderboardPage: React.FC = () => {
                   <div className="flex items-center justify-center w-12 h-12 rounded-full bg-background/20 font-bold text-xl">
                     {index < 3 ? getRankIcon(index) : `#${index + 1}`}
                   </div>
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                    style={{ backgroundColor: participant.avatar.color }}
+                  >
+                    {participant.avatar.value}
+                  </div>
                   <div className="flex-1">
                     <p className="font-bold text-lg">{participant.nickname}</p>
                     <p className="text-sm opacity-90">
                       {participant.answers.filter((a) => a.isCorrect).length} /{' '}
                       {session.quiz.questions.length} correct
+                      {participant.currentStreak > 0 && ` • ${participant.currentStreak} streak 🔥`}
                     </p>
                   </div>
                   <div className="text-right">
@@ -99,7 +110,11 @@ const LeaderboardPage: React.FC = () => {
         </Card>
 
         {isHost ? (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <Button onClick={handleViewAnalytics} variant="outline" size="lg">
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Analytics
+            </Button>
             <Button onClick={handlePlayAgain} size="lg" variant="outline">
               Play Again
             </Button>

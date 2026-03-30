@@ -5,14 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AvatarSelector } from '@/components/quiz/AvatarSelector';
 import { ArrowLeft, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
+import type { Avatar } from '@/types/quiz';
 
 const JoinPage: React.FC = () => {
   const navigate = useNavigate();
   const { joinSession } = useGame();
   const [roomCode, setRoomCode] = useState('');
   const [nickname, setNickname] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState<Avatar>({
+    id: 'emoji-0',
+    type: 'emoji',
+    value: '😀',
+    color: '#8B5CF6',
+  });
 
   const handleJoin = () => {
     if (!roomCode.trim()) {
@@ -25,7 +33,7 @@ const JoinPage: React.FC = () => {
       return;
     }
 
-    const success = joinSession(roomCode.trim().toUpperCase(), nickname.trim());
+    const success = joinSession(roomCode.trim().toUpperCase(), nickname.trim(), selectedAvatar);
 
     if (!success) {
       toast.error('Invalid or expired room code. Please check and try again.');
@@ -38,7 +46,7 @@ const JoinPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-secondary/10 via-background to-primary/10">
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-2xl space-y-6">
         <Button variant="outline" size="icon" onClick={() => navigate('/')} className="mb-4">
           <ArrowLeft className="w-4 h-4" />
         </Button>
@@ -46,7 +54,7 @@ const JoinPage: React.FC = () => {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-3xl">Join Quiz</CardTitle>
-            <CardDescription>Enter the room code and your nickname to participate</CardDescription>
+            <CardDescription>Enter the room code and customize your profile</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -74,6 +82,8 @@ const JoinPage: React.FC = () => {
                 This name will be visible to other participants
               </p>
             </div>
+
+            <AvatarSelector selectedAvatar={selectedAvatar} onSelect={setSelectedAvatar} />
 
             <Button onClick={handleJoin} className="w-full" size="lg">
               <LogIn className="w-5 h-5 mr-2" />

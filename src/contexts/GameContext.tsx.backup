@@ -5,25 +5,12 @@ import type {
   Participant,
   GameContextType,
   SessionState,
-  Avatar,
-  QuizSettings,
-  QuizAnalytics,
-  Team,
-  PowerUp,
 } from '@/types/quiz';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-// In-memory storage
+// In-memory storage for sessions (simulating real-time database)
 const sessions = new Map<string, Session>();
-const quizStorage = new Map<string, Quiz>();
-
-// Initialize with some default power-ups
-const getDefaultPowerUps = (): PowerUp[] => [
-  { id: 'pu-1', type: 'freeze-time', name: 'Freeze Time', icon: 'snowflake', used: false },
-  { id: 'pu-2', type: 'fifty-fifty', name: '50/50', icon: 'lightbulb', used: false },
-  { id: 'pu-3', type: 'double-points', name: '2x Points', icon: 'zap', used: false },
-];
 
 // Generate a random 6-digit alphanumeric room code
 const generateRoomCode = (): string => {
@@ -36,21 +23,20 @@ const generateRoomCode = (): string => {
 };
 
 // Calculate points based on correctness and speed
-const calculatePoints = (isCorrect: boolean, timeSpent: number, timeLimit: number, multiplier = 1): number => {
+const calculatePoints = (isCorrect: boolean, timeSpent: number, timeLimit: number): number => {
   if (!isCorrect) return 0;
   
   const basePoints = 1000;
   const speedRatio = timeSpent / timeLimit;
   const speedBonus = Math.max(0, Math.floor(1000 * (1 - speedRatio)));
   
-  return Math.floor((basePoints + speedBonus) * multiplier);
+  return basePoints + speedBonus;
 };
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isHost, setIsHost] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
-  const [savedQuizzes, setSavedQuizzes] = useState<Quiz[]>([]);
 
   // Simulate real-time updates by polling session state
   useEffect(() => {
@@ -66,13 +52,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(interval);
   }, [session?.roomCode]);
 
-  // Load saved quizzes from storage
-  useEffect(() => {
-    const quizzes = Array.from(quizStorage.values());
-    setSavedQuizzes(quizzes);
-  }, []);
-
-  const createSession = useCallback((quiz: Quiz, isTeamMode = false): string => {
+  const createSession = useCallback((quiz: Quiz): string => {
     const roomCode = generateRoomCode();
     const hostId = `host-${Date.now()}`;
     
@@ -82,8 +62,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       quiz,
       hostId,
       participants: [],
-      teams: isTeamMode ? [] : undefined,
-      isTeamMode,
       currentQuestionIndex: -1,
       state: 'lobby',
       questionStartTime: null,
@@ -98,7 +76,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return roomCode;
   }, []);
 
-  const joinSession = useCallback((roomCode: string, nickname: string, avatar: Avatar): boolean => {
+  const joinSession = useCallback((roomCode: string, nickname: string): boolean => {
     const existingSession = sessions.get(roomCode.toUpperCase());
     
     if (!existingSession) {
@@ -121,11 +99,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newParticipant: Participant = {
       id: `participant-${Date.now()}-${Math.random()}`,
       nickname,
-      avatar,
       score: 0,
       answers: [],
-      powerUps: getDefaultPowerUps(),
-      currentStreak: 0,
       joinedAt: new Date(),
     };
 
@@ -185,19 +160,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!question) return;
 
       const isCorrect = answer === question.correctAnswer;
-      
-      // Check for double points power-up
-      const doublePointsPowerUp = currentParticipant.powerUps.find(
-        p => p.type === 'double-points' && p.used
-      );
-      const multiplier = doublePointsPowerUp ? 2 : 1;
-      
-      const pointsEarned = calculatePoints(isCorrect, timeSpent, question.timeLimit, multiplier);
+      const pointsEarned = calculatePoints(isCorrect, timeSpent, question.timeLimit);
 
       const updatedParticipant = {
         ...currentParticipant,
         score: currentParticipant.score + pointsEarned,
-        currentStreak: isCorrect ? currentParticipant.currentStreak + 1 : 0,
         answers: [
           ...currentParticipant.answers,
           {
@@ -226,35 +193,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [session, currentParticipant]
   );
 
-  const usePowerUp = useCallback((powerUpType: string) => {
-    if (!currentParticipant) return;
-
-    const updatedPowerUps = currentParticipant.powerUps.map(p =>
-      p.type === powerUpType ? { ...p, used: true } : p
-    );
-
-    const updatedParticipant = {
-      ...currentParticipant,
-      powerUps: updatedPowerUps,
-    };
-
-    setCurrentParticipant(updatedParticipant);
-
-    if (session) {
-      const updatedParticipants = session.participants.map(p =>
-        p.id === currentParticipant.id ? updatedParticipant : p
-      );
-
-      const updatedSession = {
-        ...session,
-        participants: updatedParticipants,
-      };
-
-      sessions.set(session.roomCode, updatedSession);
-      setSession(updatedSession);
-    }
-  }, [currentParticipant, session]);
-
   const endSession = useCallback(() => {
     if (!session) return;
 
@@ -270,115 +208,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return [...session.participants].sort((a, b) => b.score - a.score);
   }, [session]);
 
-  const getTeamLeaderboard = useCallback((): Team[] => {
-    if (!session || !session.teams) return [];
-    
-    return [...session.teams].sort((a, b) => b.score - a.score);
-  }, [session]);
-
-  const saveQuiz = useCallback((quiz: Quiz) => {
-    quizStorage.set(quiz.id, quiz);
-    setSavedQuizzes(Array.from(quizStorage.values()));
-  }, []);
-
-  const loadQuiz = useCallback((quizId: string): Quiz | null => {
-    return quizStorage.get(quizId) || null;
-  }, []);
-
-  const deleteQuiz = useCallback((quizId: string) => {
-    quizStorage.delete(quizId);
-    setSavedQuizzes(Array.from(quizStorage.values()));
-  }, []);
-
-  const getAnalytics = useCallback((): QuizAnalytics | null => {
-    if (!session || session.state !== 'ended') return null;
-
-    const totalParticipants = session.participants.length;
-    const averageScore = session.participants.reduce((sum, p) => sum + p.score, 0) / totalParticipants;
-    const completionRate = (session.participants.filter(p => 
-      p.answers.length === session.quiz.questions.length
-    ).length / totalParticipants) * 100;
-
-    const questionStats = session.quiz.questions.map(question => {
-      const answers = session.participants.flatMap(p => 
-        p.answers.filter(a => a.questionId === question.id)
-      );
-      const correctAnswers = answers.filter(a => a.isCorrect).length;
-      const correctRate = (correctAnswers / answers.length) * 100;
-      const averageTime = answers.reduce((sum, a) => sum + a.timeSpent, 0) / answers.length;
-
-      return {
-        questionId: question.id,
-        correctRate,
-        averageTime,
-      };
-    });
-
-    const participantPerformance = session.participants.map(p => ({
-      participantId: p.id,
-      nickname: p.nickname,
-      score: p.score,
-      correctAnswers: p.answers.filter(a => a.isCorrect).length,
-    })).sort((a, b) => b.score - a.score);
-
-    return {
-      quizId: session.quiz.id,
-      totalParticipants,
-      averageScore,
-      completionRate,
-      questionStats,
-      participantPerformance,
-    };
-  }, [session]);
-
-  const updateAvatar = useCallback((avatar: Avatar) => {
-    if (!currentParticipant) return;
-
-    const updatedParticipant = {
-      ...currentParticipant,
-      avatar,
-    };
-
-    setCurrentParticipant(updatedParticipant);
-  }, [currentParticipant]);
-
-  const updateQuizSettings = useCallback((settings: QuizSettings) => {
-    if (!session) return;
-
-    const updatedQuiz = {
-      ...session.quiz,
-      settings,
-    };
-
-    const updatedSession = {
-      ...session,
-      quiz: updatedQuiz,
-    };
-
-    sessions.set(session.roomCode, updatedSession);
-    setSession(updatedSession);
-  }, [session]);
-
   const value: GameContextType = {
     session,
     isHost,
     currentParticipant,
-    savedQuizzes,
     createSession,
     joinSession,
     startGame,
     nextQuestion,
     submitAnswer,
-    usePowerUp,
     endSession,
     getLeaderboard,
-    getTeamLeaderboard,
-    saveQuiz,
-    loadQuiz,
-    deleteQuiz,
-    getAnalytics,
-    updateAvatar,
-    updateQuizSettings,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

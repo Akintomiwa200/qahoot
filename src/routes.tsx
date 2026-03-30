@@ -7,6 +7,9 @@ import WaitingRoomPage from './pages/WaitingRoomPage';
 import AnswerPage from './pages/AnswerPage';
 import ScorePage from './pages/ScorePage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import QuizLibraryPage from './pages/QuizLibraryPage';
+import QuizSettingsPage from './pages/QuizSettingsPage';
+import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -26,6 +29,16 @@ const routes: RouteConfig[] = [
     name: 'Create Quiz',
     path: '/create-quiz',
     element: <CreateQuizPage />
+  },
+  {
+    name: 'Quiz Library',
+    path: '/quiz-library',
+    element: <QuizLibraryPage />
+  },
+  {
+    name: 'Quiz Settings',
+    path: '/quiz-settings',
+    element: <QuizSettingsPage />
   },
   {
     name: 'Quiz Lobby',
@@ -61,6 +74,11 @@ const routes: RouteConfig[] = [
     name: 'Leaderboard',
     path: '/leaderboard',
     element: <LeaderboardPage />
+  },
+  {
+    name: 'Analytics',
+    path: '/analytics',
+    element: <AnalyticsDashboardPage />
   }
 ];
 
