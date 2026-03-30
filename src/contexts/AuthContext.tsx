@@ -50,13 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase
       .auth
       .getSession()
-      .then(({ data: { session } }) => {
+      .then(({ data: { session } }: { data: { session: any } }) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           getProfile(session.user.id).then(setProfile);
         }
       })
-      .catch(error => {
+      .catch((error: any) => {
         toast.error(`获取用户信息失败: ${error.message}`);
       })
       .finally(() => {
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     // In this function, do NOT use any await calls. Use `.then()` instead to avoid deadlocks.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         getProfile(session.user.id).then(setProfile);

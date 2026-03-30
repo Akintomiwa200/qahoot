@@ -64,9 +64,28 @@ export default {
                     blue: 'hsl(var(--education-blue))',
                     green: 'hsl(var(--education-green))'
                 },
-                success: 'hsl(var(--success))',
-                warning: 'hsl(var(--warning))',
-                info: 'hsl(var(--info))',
+                success: {
+                    DEFAULT: 'hsl(var(--success))',
+                    foreground: 'hsl(var(--success-foreground))'
+                },
+                warning: {
+                    DEFAULT: 'hsl(var(--warning))',
+                    foreground: 'hsl(var(--warning-foreground))'
+                },
+                info: {
+                    DEFAULT: 'hsl(var(--info))',
+                    foreground: 'hsl(var(--info-foreground))'
+                },
+                answer: {
+                    '1': 'hsl(var(--answer-1))',
+                    '1-foreground': 'hsl(var(--answer-1-foreground))',
+                    '2': 'hsl(var(--answer-2))',
+                    '2-foreground': 'hsl(var(--answer-2-foreground))',
+                    '3': 'hsl(var(--answer-3))',
+                    '3-foreground': 'hsl(var(--answer-3-foreground))',
+                    '4': 'hsl(var(--answer-4))',
+                    '4-foreground': 'hsl(var(--answer-4-foreground))'
+                },
                 sidebar: {
                     DEFAULT: 'hsl(var(--sidebar-background))',
                     background: 'hsl(var(--sidebar-background))',
