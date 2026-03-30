@@ -24,7 +24,6 @@ import {
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeBlob, setActiveBlob] = useState(0);
   const [floatingNumbers, setFloatingNumbers] = useState<{ id: number; x: number; y: number; value: number }[]>([]);
 
   // Animated floating particles effect
@@ -141,8 +140,8 @@ const HomePage: React.FC = () => {
             key={i}
             className="absolute w-2 h-2 bg-primary/20 rounded-full"
             animate={{
-              x: [Math.random() * window.innerWidth, Math.random() * window.innerWidth],
-              y: [Math.random() * window.innerHeight, Math.random() * window.innerHeight],
+              x: [Math.random() * 1920, Math.random() * 1920],
+              y: [Math.random() * 1080, Math.random() * 1080],
               scale: [1, 1.5, 1],
               opacity: [0.3, 0.6, 0.3]
             }}
