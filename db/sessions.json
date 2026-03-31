@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "1774994053076-wowfg08",
+    "createdAt": "2026-03-31T21:54:13.076Z",
+    "code": "G7NTPL",
+    "quizId": "sample-quiz-1",
+    "hostId": "admin",
+    "status": "waiting",
+    "players": [],
+    "currentQuestion": 0,
+    "startedAt": null,
+    "endedAt": null
+  },
+  {
+    "id": "1774994217532-xgbtgrh",
+    "createdAt": "2026-03-31T21:56:57.532Z",
+    "code": "6E8SCM",
+    "quizId": "sample-quiz-1",
+    "hostId": "admin",
+    "status": "waiting",
+    "players": [],
+    "currentQuestion": 0,
+    "startedAt": null,
+    "endedAt": null
+  }
+]
