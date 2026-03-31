@@ -1,0 +1,29 @@
+[
+  {
+    "id": "sample-quiz-1",
+    "title": "General Knowledge",
+    "description": "A mix of trivia across science, history, and pop culture.",
+    "category": "General",
+    "difficulty": "medium",
+    "hostId": "admin",
+    "createdAt": "2026-03-31T00:00:00.000Z",
+    "questions": [
+      {
+        "id": "q1",
+        "text": "What is the capital of France?",
+        "options": ["Berlin", "Madrid", "Paris", "Rome"],
+        "correctIndex": 2,
+        "timeLimit": 20,
+        "points": 1000
+      },
+      {
+        "id": "q2",
+        "text": "Which planet is closest to the Sun?",
+        "options": ["Venus", "Earth", "Mars", "Mercury"],
+        "correctIndex": 3,
+        "timeLimit": 20,
+        "points": 1000
+      }
+    ]
+  }
+]

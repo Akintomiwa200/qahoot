@@ -1,0 +1,9 @@
+[
+  {
+    "id": "admin",
+    "username": "admin",
+    "email": "admin@quizblast.app",
+    "role": "admin",
+    "createdAt": "2026-03-31T00:00:00.000Z"
+  }
+]

@@ -1,368 +1,367 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Zap, 
-  Users, 
-  BookOpen, 
-  Settings, 
-  Trophy, 
-  Sparkles,
+import { motion } from 'motion/react';
+import {
+  Users,
+  BookOpen,
+  Trophy,
   ArrowRight,
   Gamepad2,
   Music,
   Palette,
-  Crown,
-  Flame,
   Rocket,
-  Target,
   Star,
   Heart
 } from 'lucide-react';
 
-const HomePage: React.FC = () => {
+// ────────────────────────────────────────────────────────────────────────────
+// Solid Kahoot-style colour palette
+// purple: #46178f  blue: #1368ce  green: #26890c  red: #e21b3c  amber: #ffa602
+// ────────────────────────────────────────────────────────────────────────────
+
+const FEATURES = [
+  {
+    icon: Rocket,
+    title: 'Host a Quiz',
+    description: 'Create custom quizzes & invite players worldwide',
+    bg: '#46178f',
+    border: '#250754',
+    path: '/create-quiz',
+    btnLabel: 'Create Quiz',
+  },
+  {
+    icon: Users,
+    title: 'Join a Battle',
+    description: 'Enter a room code & compete in real-time',
+    bg: '#1368ce',
+    border: '#083c7d',
+    path: '/join',
+    btnLabel: 'Join Now',
+  },
+  {
+    icon: BookOpen,
+    title: 'Quiz Library',
+    description: '1 000+ ready-to-play quizzes',
+    bg: '#26890c',
+    border: '#124a04',
+    path: '/quiz-library',
+    btnLabel: 'Explore',
+  },
+  {
+    icon: Palette,
+    title: 'Customise',
+    description: 'Themes, music & power-ups',
+    bg: '#e21b3c',
+    border: '#870d21',
+    path: '/quiz-settings',
+    btnLabel: 'Settings',
+  },
+];
+
+const STATS = [
+  { icon: Gamepad2, value: '1M+',  label: 'Quizzes',   color: '#1368ce' },
+  { icon: Users,    value: '50K+', label: 'Players',   color: '#e21b3c' },
+  { icon: Star,     value: '4.9',  label: 'Rating',    color: '#ffa602' },
+  { icon: Heart,    value: '100+', label: 'Countries', color: '#26890c' },
+];
+
+const BADGES = ['🚀 Fast-paced', '🎯 Real-time', '🏆 Leaderboards', '🎮 Power-ups'];
+
+// Motion helpers
+const fade = (delay = 0) => ({
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 110, damping: 16, delay },
+  },
+});
+
+const tapHover = {
+  hover: { scale: 1.04, y: -4, transition: { type: 'spring' as const, stiffness: 300, damping: 20 } },
+  tap:   { scale: 0.96 },
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+
+export default function HomePage() {
   const navigate = useNavigate();
-  const [floatingNumbers, setFloatingNumbers] = useState<{ id: number; x: number; y: number; value: number }[]>([]);
-
-  // Animated floating particles effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFloatingNumbers(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          value: Math.floor(Math.random() * 1000)
-        }
-      ].slice(-8));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12
-      }
-    }
-  };
-
-  const cardVariants = {
-    hover: {
-      scale: 1.05,
-      y: -8,
-      transition: {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 15
-      }
-    },
-    tap: { scale: 0.98 }
-  };
-
-  const pulseAnimation = {
-    scale: [1, 1.05, 1],
-    transition: {
-      duration: 2,
-      repeat: Number.POSITIVE_INFINITY,
-      repeatType: "reverse" as const
-    }
-  };
-
-  const features = [
-    {
-      icon: <Rocket className="w-6 h-6" />,
-      title: "Host a Quiz",
-      description: "Create custom quizzes & invite players worldwide",
-      color: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-500/20 to-pink-500/20",
-      onClick: () => navigate('/create-quiz'),
-      buttonText: "Create Quiz",
-      buttonVariant: "default" as const
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: "Join a Battle",
-      description: "Enter room code & compete in real-time",
-      color: "from-blue-500 to-cyan-500",
-      bgGradient: "from-blue-500/20 to-cyan-500/20",
-      onClick: () => navigate('/join'),
-      buttonText: "Join Now",
-      buttonVariant: "secondary" as const
-    },
-    {
-      icon: <BookOpen className="w-6 h-6" />,
-      title: "Quiz Library",
-      description: "1000+ ready-to-play quizzes",
-      color: "from-green-500 to-emerald-500",
-      bgGradient: "from-green-500/20 to-emerald-500/20",
-      onClick: () => navigate('/quiz-library'),
-      buttonText: "Explore",
-      buttonVariant: "outline" as const
-    },
-    {
-      icon: <Palette className="w-6 h-6" />,
-      title: "Customize",
-      description: "Themes, music & power-ups",
-      color: "from-orange-500 to-red-500",
-      bgGradient: "from-orange-500/20 to-red-500/20",
-      onClick: () => navigate('/quiz-settings'),
-      buttonText: "Settings",
-      buttonVariant: "outline" as const
-    }
-  ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-      {/* Animated Background Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-primary/20 rounded-full"
-            animate={{
-              x: [Math.random() * 1920, Math.random() * 1920],
-              y: [Math.random() * 1080, Math.random() * 1080],
-              scale: [1, 1.5, 1],
-              opacity: [0.3, 0.6, 0.3]
-            }}
-            transition={{
-              duration: 10 + Math.random() * 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear"
-            }}
-          />
-        ))}
+    <div className="relative min-h-screen overflow-hidden" style={{ background: '#f0edf8' }}>
+
+      {/* ── Solid geometric background shapes ─────────────────────────────── */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Top-left triangle */}
+        <motion.div
+          className="absolute"
+          style={{
+            top: -80, left: -80,
+            width: 340, height: 340,
+            background: '#e21b3c',
+            opacity: 0.18,
+            clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+          }}
+          animate={{ rotate: [0, 6, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Top-right circle */}
+        <motion.div
+          className="absolute rounded-full"
+          style={{
+            top: 60, right: -60,
+            width: 260, height: 260,
+            background: '#ffa602',
+            opacity: 0.22,
+          }}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Bottom-left square */}
+        <motion.div
+          className="absolute"
+          style={{
+            bottom: -60, left: 100,
+            width: 220, height: 220,
+            background: '#1368ce',
+            opacity: 0.18,
+            borderRadius: 24,
+          }}
+          animate={{ rotate: [0, 90, 180, 270, 360] }}
+          transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
+        />
+        {/* Bottom-right diamond */}
+        <motion.div
+          className="absolute"
+          style={{
+            bottom: 40, right: 80,
+            width: 200, height: 200,
+            background: '#26890c',
+            opacity: 0.18,
+            transform: 'rotate(45deg)',
+            borderRadius: 16,
+          }}
+          animate={{ rotate: [45, 55, 45] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
 
-      {/* Animated Gradient Blobs */}
-      <motion.div
-        className="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl"
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/30 rounded-full blur-3xl"
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-        transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY }}
-      />
+      {/* ── Main content ──────────────────────────────────────────────────── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-24">
 
-      {/* Floating Score Numbers Effect */}
-      <AnimatePresence>
-        {floatingNumbers.map(num => (
-          <motion.div
-            key={num.id}
-            className="absolute text-primary/40 font-bold text-2xl pointer-events-none"
-            initial={{ x: `${num.x}%`, y: `${num.y}%`, opacity: 0, scale: 0.5 }}
-            animate={{ y: `${num.y - 20}%`, opacity: [0, 1, 0], scale: [0.5, 1, 0.8] }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 3 }}
-          >
-            +{num.value}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <motion.div
-        className="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-20"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Hero Section with Enhanced Animation */}
-        <motion.div variants={itemVariants} className="text-center space-y-6 mb-16">
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Flame className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">🔥 50,000+ Active Players</span>
-          </motion.div>
-
-          <div className="space-y-4">
+        {/* Hero */}
+        <motion.section
+          variants={fade(0)}
+          initial="hidden"
+          animate="visible"
+          className="text-center mb-20 space-y-6"
+        >
+          {/* Logo row */}
+          <div className="flex items-center justify-center gap-4 mb-2">
             <motion.div
-              className="flex items-center justify-center gap-4"
-              animate={pulseAnimation}
+              animate={{ rotate: [0, 12, -12, 0] }}
+              transition={{ duration: 2.4, repeat: Infinity, delay: 1 }}
             >
-              <Zap className="w-16 h-16 text-primary" />
-              <Sparkles className="w-8 h-8 text-secondary" />
-            </motion.div>
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
-              QuizBlast
-            </h1>
-            <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-            >
-              <Trophy className="w-12 h-12 text-primary mx-auto" />
+              <Trophy
+                className="w-16 h-16 drop-shadow-md"
+                style={{ color: '#ffa602' }}
+                fill="#ffa602"
+              />
             </motion.div>
           </div>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-            Real-time quiz battles. Test your knowledge. Compete with friends.
+          <h1
+            className="text-7xl md:text-9xl font-black uppercase tracking-tight leading-none"
+            style={{ color: '#46178f', letterSpacing: '-0.02em' }}
+          >
+            QuizBlast
+          </h1>
+          <p className="text-2xl md:text-3xl font-bold text-gray-700 max-w-xl mx-auto">
+            Real-time quiz battles. Test your knowledge.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3">
-            {['🚀 Fast-paced', '🎯 Real-time', '🏆 Leaderboards', '🎮 Power-ups'].map((badge, idx) => (
+          {/* Badges */}
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
+            {BADGES.map((b, i) => (
               <motion.span
-                key={idx}
-                className="px-4 py-2 bg-muted rounded-full text-sm font-medium"
-                initial={{ opacity: 0, y: 20 }}
+                key={b}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + idx * 0.1 }}
-                whileHover={{ scale: 1.1, backgroundColor: "hsl(var(--primary) / 0.1)" }}
+                transition={{ delay: 0.3 + i * 0.08 }}
+                whileHover={{ scale: 1.08 }}
+                className="px-5 py-2.5 bg-white border-2 border-gray-200 rounded-2xl text-base font-bold text-gray-700 shadow-sm cursor-default select-none"
               >
-                {badge}
+                {b}
               </motion.span>
             ))}
           </div>
-        </motion.div>
+        </motion.section>
 
-        {/* Feature Cards Grid */}
-        <motion.div variants={itemVariants} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors cursor-pointer h-full">
-                <CardHeader>
-                  {/* Animated gradient overlay on hover */}
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0`}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <div className="relative z-10 space-y-4">
-                    <motion.div
-                      className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg`}
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      {React.cloneElement(feature.icon, { className: "w-8 h-8 text-white" })}
-                    </motion.div>
-                    <CardTitle className="text-xl">
-                      {feature.title}
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <Button
-                    variant={feature.buttonVariant}
-                    className="w-full group"
-                    onClick={feature.onClick}
+        {/* Feature cards */}
+        <motion.section
+          variants={fade(0.15)}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20"
+        >
+          {FEATURES.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.title}
+                custom={i}
+                variants={tapHover}
+                whileHover="hover"
+                whileTap="tap"
+                className="flex flex-col cursor-pointer"
+                onClick={() => navigate(f.path)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && navigate(f.path)}
+              >
+                {/* Card */}
+                <div
+                  className="flex flex-col flex-1 rounded-3xl overflow-hidden shadow-xl"
+                  style={{ border: `4px solid ${f.border}`, background: '#fff' }}
+                >
+                  {/* Coloured banner */}
+                  <div
+                    className="flex items-center justify-center py-8"
+                    style={{ background: f.bg }}
                   >
-                    {feature.buttonText}
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                      <Icon className="w-9 h-9 text-white" />
+                    </div>
+                  </div>
 
-        {/* Stats Section with Counters */}
-        <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {[
-            { icon: <Gamepad2 className="w-6 h-6" />, value: "1M+", label: "Quizzes Played" },
-            { icon: <Users className="w-6 h-6" />, value: "50K+", label: "Daily Players" },
-            { icon: <Star className="w-6 h-6" />, value: "4.9", label: "App Rating" },
-            { icon: <Heart className="w-6 h-6" />, value: "100+", label: "Countries" }
-          ].map((stat, idx) => (
-            <motion.div
-              key={idx}
-              className="text-center p-6 bg-card rounded-xl border border-border hover:border-primary/50 transition-colors"
-              whileHover={{ scale: 1.05, y: -5 }}
-            >
-              <div className="flex justify-center mb-2 text-primary">{stat.icon}</div>
-              <div className="text-3xl font-bold text-primary mb-1">{stat.value}</div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+                  {/* Body */}
+                  <div className="flex flex-col flex-1 p-6 gap-4">
+                    <div>
+                      <h2 className="text-2xl font-black text-gray-800 mb-1">{f.title}</h2>
+                      <p className="text-base font-medium text-gray-500">{f.description}</p>
+                    </div>
+
+                    {/* Kahoot-style button */}
+                    <button
+                      className="mt-auto flex items-center justify-center gap-2 w-full py-4 rounded-2xl text-lg font-black text-white transition-all active:translate-y-1"
+                      style={{
+                        background: f.bg,
+                        borderBottom: `5px solid ${f.border}`,
+                      }}
+                      onClick={e => { e.stopPropagation(); navigate(f.path); }}
+                    >
+                      {f.btnLabel}
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.section>
+
+        {/* Stats bar */}
+        <motion.section
+          variants={fade(0.25)}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
+        >
+          {STATS.map(s => {
+            const Icon = s.icon;
+            return (
+              <motion.div
+                key={s.label}
+                whileHover={{ y: -6 }}
+                className="flex flex-col items-center p-8 bg-white rounded-2xl shadow-md"
+                style={{ borderBottom: `5px solid ${s.color}` }}
+              >
+                <Icon className="w-8 h-8 mb-3" style={{ color: s.color }} />
+                <span className="text-4xl font-black text-gray-800">{s.value}</span>
+                <span className="mt-1 text-sm font-bold uppercase tracking-widest text-gray-400">
+                  {s.label}
+                </span>
+              </motion.div>
+            );
+          })}
+        </motion.section>
 
         {/* CTA Banner */}
-        <motion.div variants={itemVariants}>
-          <Card className="relative overflow-hidden border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-secondary/10">
-            <CardContent className="p-8 md:p-12">
-              <div className="text-center space-y-6">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                  className="inline-block"
-                >
-                  <Crown className="w-16 h-16 text-primary" />
-                </motion.div>
-                <h2 className="text-3xl md:text-4xl font-bold">Ready to Play?</h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Join millions of players in the ultimate quiz battle experience!</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    size="lg"
-                    className="text-lg px-8"
-                    onClick={() => navigate('/create-quiz')}
-                  >
-                    <Rocket className="w-5 h-5 mr-2" />
-                    Start Hosting
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="text-lg px-8"
-                    onClick={() => navigate('/join')}
-                  >
-                    <Target className="w-5 h-5 mr-2" />
-                    Join Game
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <motion.section
+          variants={fade(0.35)}
+          initial="hidden"
+          animate="visible"
+          className="relative overflow-hidden rounded-3xl text-center px-8 py-16 shadow-2xl"
+          style={{
+            background: '#ffa602',
+            borderBottom: '8px solid #cc8502',
+          }}
+        >
+          {/* Small decorative squares */}
+          {[
+            { size: 60, top: -20, left: 40,  rotate: 22,  color: '#e21b3c', opacity: 0.35 },
+            { size: 80, bottom: -30, right: 60, rotate: -15, color: '#46178f', opacity: 0.3  },
+          ].map((s, i) => (
+            // biome-ignore lint: decorative element, key is stable
+            <div
+              key={i}
+              className="absolute pointer-events-none"
+              style={{
+                width: s.size, height: s.size,
+                background: s.color,
+                opacity: s.opacity,
+                borderRadius: 10,
+                top: s.top, bottom: s.bottom,
+                left: s.left, right: s.right,
+                transform: `rotate(${s.rotate}deg)`,
+              }}
+            />
+          ))}
 
-        {/* Footer */}
-        <motion.div variants={itemVariants} className="mt-16 text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            © 2026 QuizBlast. All rights reserved.
+          <h2 className="text-5xl md:text-6xl font-black uppercase text-white drop-shadow-sm mb-4">
+            Ready to Play?
+          </h2>
+          <p className="text-xl font-bold text-white/90 mb-10 max-w-lg mx-auto">
+            Jump into the ultimate real-time quiz experience!
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Music className="w-3 h-3" />
-              🎵 Play with music & sound effects
-            </span>
-            <span className="flex items-center gap-1">
-              <Zap className="w-3 h-3" />
-              ⚡ Real-time WebSocket technology
-            </span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <motion.button
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+              onClick={() => navigate('/create-quiz')}
+              className="px-10 py-5 rounded-2xl text-xl font-black text-white transition-all active:translate-y-1"
+              style={{ background: '#46178f', borderBottom: '5px solid #250754' }}
+            >
+              🚀 Start Hosting
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+              onClick={() => navigate('/join')}
+              className="px-10 py-5 rounded-2xl text-xl font-black text-[#46178f] bg-white transition-all active:translate-y-1"
+              style={{ borderBottom: '5px solid #ccc' }}
+            >
+              🎮 Join Game
+            </motion.button>
           </div>
-        </motion.div>
-      </motion.div>
+        </motion.section>
+
+        {/* Footer note */}
+        <motion.footer
+          variants={fade(0.45)}
+          initial="hidden"
+          animate="visible"
+          className="mt-16 flex flex-wrap justify-center gap-8 text-sm font-bold text-gray-400 uppercase tracking-widest"
+        >
+          <span className="flex items-center gap-2">
+            <Music className="w-4 h-4" style={{ color: '#46178f' }} />
+            Music &amp; Sounds
+          </span>
+          <span className="flex items-center gap-2">
+            <Gamepad2 className="w-4 h-4" style={{ color: '#e21b3c' }} />
+            WebSocket Technology
+          </span>
+          <span>© 2026 QuizBlast</span>
+        </motion.footer>
+      </div>
     </div>
   );
-};
-
-export default HomePage;
+}
